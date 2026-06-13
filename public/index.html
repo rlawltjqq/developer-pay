@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DevPay — 개발자 연봉을 한눈에</title>
+<meta name="description" content="직군별·연차별·국가별 개발자 연봉 랭킹과 개발자 장비 인기 순위" />
+<link rel="stylesheet" href="/css/style.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>💸</text></svg>" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body>
+<header class="hero">
+  <h1>💸 DevPay</h1>
+  <p class="tagline">개발자 연봉, 한눈에. 직군·연차·국가별 랭킹부터 장비 순위까지</p>
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="jobs">🏆 직군 랭킹</button>
+    <button class="tab" data-tab="tech">💻 기술스택</button>
+    <button class="tab" data-tab="exp">📈 연차별</button>
+    <button class="tab" data-tab="world">🌍 국가 비교</button>
+    <button class="tab" data-tab="me">🎯 내 연봉 위치</button>
+    <button class="tab" data-tab="submit">✍️ 연봉 입력</button>
+    <button class="tab" data-tab="gear">⌨️ 장비 랭킹</button>
+  </nav>
+</header>
+
+<main>
+  <!-- 직군별 랭킹 -->
+  <section id="panel-jobs" class="panel active">
+    <h2>직군별 평균 연봉 랭킹</h2>
+    <p class="hint">공개 연봉 리포트 시드 + 사용자 제출 데이터를 합산한 실시간 랭킹 (단위: 만원/년) — 행을 클릭하면 그 직군의 주요 기술과 장비가 보입니다</p>
+    <div id="job-list" class="rank-list"></div>
+  </section>
+
+  <!-- 기술스택별 -->
+  <section id="panel-tech" class="panel">
+    <h2>기술스택·언어별 평균 연봉</h2>
+    <p class="hint">점핏 2025 리포트 실측 — 같은 개발이라도 쓰는 언어·프레임워크에 따라 연봉이 다릅니다 (단위: 만원/년)</p>
+    <div id="tech-list" class="rank-list"></div>
+  </section>
+
+  <!-- 연차별 -->
+  <section id="panel-exp" class="panel">
+    <h2>연차별 평균 연봉 곡선</h2>
+    <p class="hint">신입부터 10년차+까지, 내 연차의 평균은 어디쯤일까요?</p>
+    <div class="chart-wrap"><canvas id="exp-chart"></canvas></div>
+    <div id="exp-list" class="chip-row"></div>
+  </section>
+
+  <!-- 국가 비교 -->
+  <section id="panel-world" class="panel">
+    <h2>국가별 개발자 연봉 중앙값</h2>
+    <p class="hint">Stack Overflow Survey 2025 등 공개 자료 기준 (USD/년 · 원화 환산 1,380원/USD)</p>
+    <div class="me-match">
+      <input id="world-salary" type="number" placeholder="내 연봉 (만원)" min="1000" max="100000" />
+      <button id="world-btn" class="btn">어느 나라 수준일까? 🧭</button>
+    </div>
+    <div id="world-result" class="callout" hidden></div>
+    <div id="country-list" class="rank-list"></div>
+  </section>
+
+  <!-- 내 연봉 위치 -->
+  <section id="panel-me" class="panel">
+    <h2>내 연봉, 상위 몇 %일까?</h2>
+    <p class="hint">직군·연차 기준 분포에서 내 위치를 계산합니다. 시급·분급 환산은 덤!</p>
+    <form id="pct-form" class="form-grid">
+      <label>직군 <select id="pct-job"><option value="">전체 평균 기준</option></select></label>
+      <label>경력 (년) <input id="pct-years" type="number" min="0" max="40" placeholder="예: 3" /></label>
+      <label>연봉 (만원) <input id="pct-salary" type="number" min="1000" max="100000" placeholder="예: 5000" required /></label>
+      <button type="submit" class="btn primary">계산하기 🎯</button>
+    </form>
+    <div id="pct-result" hidden>
+      <div class="gauge-wrap">
+        <div class="gauge"><div class="gauge-fill" id="gauge-fill"></div><div class="gauge-marker" id="gauge-marker"></div></div>
+        <div class="gauge-labels"><span>하위</span><span>평균</span><span>상위</span></div>
+      </div>
+      <div class="stat-cards">
+        <div class="stat-card big"><div class="stat-label">내 위치</div><div class="stat-value" id="pct-top">—</div><div class="stat-sub" id="pct-msg"></div></div>
+        <div class="stat-card"><div class="stat-label">기준 중앙값</div><div class="stat-value" id="pct-median">—</div></div>
+        <div class="stat-card"><div class="stat-label">시급 환산</div><div class="stat-value" id="pct-hour">—</div></div>
+        <div class="stat-card"><div class="stat-label">1분의 가치</div><div class="stat-value" id="pct-minute">—</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 연봉 입력 -->
+  <section id="panel-submit" class="panel">
+    <h2>내 연봉 공유하기</h2>
+    <p class="hint">익명으로 제출되며, 직군·연차 랭킹에 즉시 반영됩니다. 데이터가 쌓일수록 정확해져요.</p>
+    <form id="submit-form" class="form-grid">
+      <label>직군 <select id="sub-job" required></select></label>
+      <label>경력 (년) <input id="sub-years" type="number" min="0" max="40" required placeholder="신입은 0" /></label>
+      <label>연봉 (만원) <input id="sub-salary" type="number" min="1000" max="100000" required placeholder="예: 5200" /></label>
+      <button type="submit" class="btn primary">익명으로 제출 ✍️</button>
+    </form>
+    <div id="submit-result" class="callout" hidden></div>
+    <h3>최근 제출 피드</h3>
+    <div id="recent-list" class="feed"></div>
+  </section>
+
+  <!-- 장비 랭킹 -->
+  <section id="panel-gear" class="panel">
+    <h2>개발자 장비 인기 순위</h2>
+    <p class="hint">실측 지표로 순위를 매깁니다 — <span id="gear-method">점수 = Hacker News 언급 글 수 + 투표 × 5</span></p>
+    <p class="hint">마음에 드는 장비에 투표하면 점수에 바로 반영됩니다. (1클릭 1표)</p>
+    <div class="chip-row">
+      <button class="chip active" data-gear="keyboard">⌨️ 키보드</button>
+      <button class="chip" data-gear="mouse">🖱️ 마우스</button>
+    </div>
+    <div id="gear-list" class="rank-list"></div>
+  </section>
+</main>
+
+<footer>
+  <p>데이터 출처: <a href="https://jumpit.saramin.co.kr/report/2025/salary" target="_blank" rel="noopener">점핏 2025 개발자 연봉 리포트</a>(직무·기술스택) · <a href="https://survey.stackoverflow.co/2025/work/" target="_blank" rel="noopener">Stack Overflow Survey 2025</a>(국가) · <a href="https://hn.algolia.com/api" target="_blank" rel="noopener">Hacker News API</a>(장비 언급량, 실시간)</p>
+  <p>연봉·기술스택 수치는 공개 리포트의 실제 값입니다. 연차 곡선 일부는 실제 앵커(신입·6년·10년) 사이 보간값이며, 사용자 제출이 누적되면 함께 반영됩니다.</p>
+  <p>API: <code>/api/v1</code> — 모바일 앱에서 동일 엔드포인트 사용 가능 (CORS 허용)</p>
+</footer>
+
+<script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+node_modules/
+.vercel/
+.env
+.env.*
+*.log
+
+# 구버전 로컬 SQLite (더 이상 사용 안 함)
+devpay.db
+devpay.db-*
+*.sqlite

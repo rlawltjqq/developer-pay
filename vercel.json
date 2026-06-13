@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "node scripts/fetch-popularity.mjs",
+  "outputDirectory": "public",
+  "functions": {
+    "api/v1/[...slug].js": { "maxDuration": 15 }
+  },
+  "crons": [
+    { "path": "/api/v1/gear/refresh", "schedule": "0 3 * * *" }
+  ]
+}
