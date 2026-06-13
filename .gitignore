@@ -11,3 +11,4 @@ devpay.db-*
 
 .vercel
 .env*
+.claude/scheduled_tasks.lock
