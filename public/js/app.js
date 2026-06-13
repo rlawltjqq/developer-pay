@@ -157,6 +157,34 @@ document.getElementById('pct-form').addEventListener('submit', async (e) => {
   } catch (err) { alert(err.message); }
 });
 
+/* ---------- 실수령액 계산기 ---------- */
+document.getElementById('net-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const q = new URLSearchParams({
+    salary: document.getElementById('net-salary').value,
+    dependents: document.getElementById('net-deps').value || 0,
+    nontax: document.getElementById('net-nontax').value || 0,
+  });
+  try {
+    const d = await api('/take-home?' + q);
+    document.getElementById('net-result').hidden = false;
+    document.getElementById('net-monthly').textContent = fmt(d.net_monthly) + '원';
+    document.getElementById('net-annual').textContent = `연 실수령 약 ${fmt(d.net_annual_manwon)}만원`;
+    document.getElementById('net-gross').textContent = fmt(d.monthly_gross) + '원';
+    document.getElementById('net-deduct').textContent = fmt(d.total_deduction_monthly) + '원';
+    document.getElementById('net-rate').textContent = `공제율 ${d.deduction_rate}%`;
+    const max = Math.max(...d.breakdown.map((b) => b.amount), 1);
+    document.getElementById('net-breakdown').innerHTML = d.breakdown.map((b) => `
+      <div class="rank-item" style="--w:${(b.amount / max * 100).toFixed(1)}%">
+        <div class="bar"></div>
+        <div class="rank-num">·</div>
+        <div><div class="rank-name">${b.label}</div><div class="rank-sub">${b.rate}</div></div>
+        <div class="rank-value">${fmt(b.amount)}<small> 원</small></div>
+      </div>`).join('');
+    document.getElementById('net-note').textContent = '※ ' + d.note;
+  } catch (err) { alert(err.message); }
+});
+
 /* ---------- 연봉 제출 ---------- */
 document.getElementById('submit-form').addEventListener('submit', async (e) => {
   e.preventDefault();

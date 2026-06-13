@@ -34,6 +34,7 @@ KV 환경변수(`KV_REST_API_URL`/`KV_REST_API_TOKEN`)가 있으면 자동으로
 | 📈 연차별 | 신입~10년차+ 평균 연봉 곡선 |
 | 🌍 국가 비교 | 국가별 중앙값 + "내 연봉은 어느 나라 수준?" 매칭 |
 | 🎯 내 연봉 위치 | 직군·연차 기준 상위 몇 %인지 게이지 + 시급/분급 환산 |
+| 💰 실수령액 | 세전 연봉 → 4대보험·소득세 공제 → 월 실수령액 (2025 요율) |
 | ✍️ 연봉 입력 | 익명 제출 → 랭킹 즉시 반영 |
 | ⌨️ 장비 랭킹 | HN 언급량 + 투표 기반 키보드·마우스 순위 |
 
@@ -51,6 +52,7 @@ KV 환경변수(`KV_REST_API_URL`/`KV_REST_API_TOKEN`)가 있으면 자동으로
 | POST | `/api/v1/salaries` | 연봉 제출 — `{ "job_id": 11, "years": 3, "salary": 5200 }` |
 | GET | `/api/v1/salaries/recent` | 최근 제출 20건 |
 | GET | `/api/v1/percentile?salary=&job_id=&years=` | 백분위 + 시급/분급 |
+| GET | `/api/v1/take-home?salary=&dependents=&nontax=` | 연봉 실수령액(세후) — 4대보험·소득세 공제 내역 |
 | GET | `/api/v1/gear?type=keyboard\|mouse` | 장비 랭킹 (HN 언급 + 투표) |
 | POST | `/api/v1/gear/:id/vote` | 장비 투표 |
 | GET | `/api/v1/gear/refresh` | HN 언급량 재수집 (Vercel Cron이 매일 호출) |

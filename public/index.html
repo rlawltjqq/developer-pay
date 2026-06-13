@@ -19,6 +19,7 @@
     <button class="tab" data-tab="exp">📈 연차별</button>
     <button class="tab" data-tab="world">🌍 국가 비교</button>
     <button class="tab" data-tab="me">🎯 내 연봉 위치</button>
+    <button class="tab" data-tab="net">💰 실수령액</button>
     <button class="tab" data-tab="submit">✍️ 연봉 입력</button>
     <button class="tab" data-tab="gear">⌨️ 장비 랭킹</button>
   </nav>
@@ -80,6 +81,28 @@
         <div class="stat-card"><div class="stat-label">시급 환산</div><div class="stat-value" id="pct-hour">—</div></div>
         <div class="stat-card"><div class="stat-label">1분의 가치</div><div class="stat-value" id="pct-minute">—</div></div>
       </div>
+    </div>
+  </section>
+
+  <!-- 실수령액 -->
+  <section id="panel-net" class="panel">
+    <h2>연봉 실수령액 계산기 (세후)</h2>
+    <p class="hint">세전 연봉에서 4대보험·소득세를 떼면 매달 통장에 얼마? (2025년 요율 기준 추정)</p>
+    <form id="net-form" class="form-grid">
+      <label>세전 연봉 (만원) <input id="net-salary" type="number" min="1000" max="1000000" required placeholder="예: 5000" /></label>
+      <label>부양가족 수 (본인 외) <input id="net-deps" type="number" min="0" max="10" value="0" /></label>
+      <label>월 비과세액 (원) <input id="net-nontax" type="number" min="0" value="200000" /></label>
+      <button type="submit" class="btn primary">계산하기 💰</button>
+    </form>
+    <div id="net-result" hidden>
+      <div class="stat-cards">
+        <div class="stat-card big"><div class="stat-label">월 실수령액</div><div class="stat-value" id="net-monthly">—</div><div class="stat-sub" id="net-annual"></div></div>
+        <div class="stat-card"><div class="stat-label">세전 월급</div><div class="stat-value" id="net-gross">—</div></div>
+        <div class="stat-card"><div class="stat-label">총 공제</div><div class="stat-value" id="net-deduct">—</div><div class="stat-sub" id="net-rate"></div></div>
+      </div>
+      <h3>공제 내역 (월)</h3>
+      <div id="net-breakdown" class="rank-list"></div>
+      <p class="hint" id="net-note" style="margin-top:14px"></p>
     </div>
   </section>
 
