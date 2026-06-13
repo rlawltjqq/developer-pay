@@ -8,3 +8,6 @@ node_modules/
 devpay.db
 devpay.db-*
 *.sqlite
+
+.vercel
+.env*

@@ -9,7 +9,7 @@
     "build": "node scripts/fetch-popularity.mjs"
   },
   "dependencies": {
-    "@upstash/redis": "^1.34.3"
+    "ioredis": "^5.4.1"
   },
   "engines": {
     "node": ">=20"
