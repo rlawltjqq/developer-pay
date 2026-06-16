@@ -165,6 +165,14 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 .stat-card.big .stat-value { color: var(--accent); font-size: 1.8rem; }
 .stat-sub { color: var(--text-dim); font-size: 0.85rem; margin-top: 4px; }
 
+/* 공유 카드 */
+.share-box { margin-top: 18px; }
+.share-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.share-preview {
+  display: block; width: 100%; max-width: 600px; margin-top: 14px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+}
+
 /* 피드 */
 .feed { display: flex; flex-direction: column; gap: 8px; }
 .feed-item {

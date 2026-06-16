@@ -154,7 +154,98 @@ document.getElementById('pct-form').addEventListener('submit', async (e) => {
     document.getElementById('pct-median').textContent = fmt(d.baseline_median) + '만원';
     document.getElementById('pct-hour').textContent = fmt(d.per_hour_krw) + '원';
     document.getElementById('pct-minute').textContent = fmt(d.per_minute_krw) + '원';
+    // 공유 카드용 컨텍스트 저장 + 버튼 초기화
+    const jobSel = document.getElementById('pct-job');
+    lastPct = {
+      ...d,
+      job: jobId ? jobSel.options[jobSel.selectedIndex].text.replace(/^[^\s]+\s/, '') : '전체',
+      years: years === '' ? null : Number(years),
+    };
+    resetShareUI();
   } catch (err) { alert(err.message); }
+});
+
+/* ---------- 결과 공유 카드 (클라이언트에서 SVG→PNG 생성) ---------- */
+let lastPct = null;
+let shareBlobUrl = null;
+const SHARE_W = 1200, SHARE_H = 630;
+
+function resetShareUI() {
+  for (const id of ['share-native-btn', 'share-dl-btn', 'share-copy-btn', 'share-preview']) {
+    document.getElementById(id).hidden = true;
+  }
+  document.getElementById('share-card-btn').hidden = false;
+}
+
+function buildCardSVG(d) {
+  const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  const sub = `${esc(d.job)}${d.years !== null ? ` · ${d.years === 0 ? '신입' : d.years + '년차'}` : ''} · 연봉 ${fmt(d.salary_manwon)}만원`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${SHARE_W}" height="${SHARE_H}" viewBox="0 0 ${SHARE_W} ${SHARE_H}">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#0d1117"/><stop offset="1" stop-color="#161b22"/></linearGradient></defs>
+  <rect width="${SHARE_W}" height="${SHARE_H}" fill="url(#bg)"/>
+  <rect x="40" y="40" width="${SHARE_W - 80}" height="${SHARE_H - 80}" rx="28" fill="#161b22" stroke="#2d333b" stroke-width="2"/>
+  <text x="90" y="135" font-family="sans-serif" font-size="44" font-weight="800" fill="#58a6ff">💸 DevPay</text>
+  <text x="90" y="185" font-family="sans-serif" font-size="28" fill="#8b949e">개발자 연봉 위치</text>
+  <text x="600" y="345" text-anchor="middle" font-family="sans-serif" font-size="130" font-weight="800" fill="#e3b341">상위 ${d.top_percent}%</text>
+  <text x="600" y="415" text-anchor="middle" font-family="sans-serif" font-size="36" fill="#e6edf3">${sub}</text>
+  <text x="600" y="475" text-anchor="middle" font-family="sans-serif" font-size="30" fill="#3fb950">${esc(d.message)}</text>
+  <text x="600" y="545" text-anchor="middle" font-family="sans-serif" font-size="26" fill="#8b949e">시급 ${fmt(d.per_hour_krw)}원 · 기준 중앙값 ${fmt(d.baseline_median)}만원</text>
+  <text x="${SHARE_W - 90}" y="565" text-anchor="end" font-family="sans-serif" font-size="24" fill="#58a6ff">developer-pay.vercel.app</text>
+</svg>`;
+}
+
+function svgToPngBlob(svg) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = SHARE_W; canvas.height = SHARE_H;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('PNG 생성 실패'))), 'image/png');
+    };
+    img.onerror = () => reject(new Error('카드 렌더 실패'));
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  });
+}
+
+document.getElementById('share-card-btn').addEventListener('click', async () => {
+  if (!lastPct) return;
+  try {
+    const blob = await svgToPngBlob(buildCardSVG(lastPct));
+    if (shareBlobUrl) URL.revokeObjectURL(shareBlobUrl);
+    shareBlobUrl = URL.createObjectURL(blob);
+    const preview = document.getElementById('share-preview');
+    preview.src = shareBlobUrl; preview.hidden = false;
+    document.getElementById('share-card-btn').hidden = true;
+    document.getElementById('share-dl-btn').hidden = false;
+    document.getElementById('share-copy-btn').hidden = false;
+    // 파일 공유 지원 시 네이티브 공유 버튼 노출
+    const file = new File([blob], 'devpay-result.png', { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      const btn = document.getElementById('share-native-btn');
+      btn.hidden = false;
+      btn.onclick = () => navigator.share({
+        files: [file], title: 'DevPay 내 연봉 위치',
+        text: `나는 개발자 연봉 상위 ${lastPct.top_percent}%! 내 위치도 확인해보세요`,
+      }).catch(() => {});
+    }
+  } catch (err) { alert(err.message); }
+});
+
+document.getElementById('share-dl-btn').addEventListener('click', () => {
+  if (!shareBlobUrl) return;
+  const a = document.createElement('a');
+  a.href = shareBlobUrl; a.download = 'devpay-result.png'; a.click();
+});
+
+document.getElementById('share-copy-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('share-copy-btn');
+  try {
+    await navigator.clipboard.writeText(location.origin);
+    btn.textContent = '✓ 복사됨';
+    setTimeout(() => (btn.textContent = '📋 링크 복사'), 1500);
+  } catch { alert('링크 복사에 실패했어요: ' + location.origin); }
 });
 
 /* ---------- 실수령액 계산기 ---------- */
