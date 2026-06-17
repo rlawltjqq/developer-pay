@@ -16,6 +16,7 @@
   <nav class="tabs" id="tabs">
     <button class="tab active" data-tab="jobs">🏆 직군 랭킹</button>
     <button class="tab" data-tab="tech">💻 기술스택</button>
+    <button class="tab" data-tab="roi">💡 스택 ROI</button>
     <button class="tab" data-tab="exp">📈 연차별</button>
     <button class="tab" data-tab="dist">📊 연봉 분포</button>
     <button class="tab" data-tab="world">🌍 국가 비교</button>
@@ -39,6 +40,25 @@
     <h2>기술스택·언어별 평균 연봉</h2>
     <p class="hint">점핏 2025 리포트 실측 — 같은 개발이라도 쓰는 언어·프레임워크에 따라 연봉이 다릅니다 (단위: 만원/년)</p>
     <div id="tech-list" class="rank-list"></div>
+  </section>
+
+  <!-- 스택 ROI -->
+  <section id="panel-roi" class="panel">
+    <h2>기술스택 ROI — 이 기술 배우면 +얼마?</h2>
+    <p class="hint">현재 스택과 목표 스택을 고르면 평균 연봉 차이를 보여줍니다 (점핏 2025 실측 기준)</p>
+    <form id="roi-form" class="form-grid">
+      <label>현재 스택 <select id="roi-from" required></select></label>
+      <label>목표 스택 <select id="roi-to" required></select></label>
+      <button type="submit" class="btn primary">비교하기 💡</button>
+    </form>
+    <div id="roi-result" hidden>
+      <div class="stat-cards">
+        <div class="stat-card big"><div class="stat-label">연봉 차이</div><div class="stat-value" id="roi-diff">—</div><div class="stat-sub" id="roi-msg"></div></div>
+        <div class="stat-card"><div class="stat-label" id="roi-from-label">현재</div><div class="stat-value" id="roi-from-val">—</div></div>
+        <div class="stat-card"><div class="stat-label" id="roi-to-label">목표</div><div class="stat-value" id="roi-to-val">—</div></div>
+        <div class="stat-card"><div class="stat-label">월 환산 차이</div><div class="stat-value" id="roi-monthly">—</div></div>
+      </div>
+    </div>
   </section>
 
   <!-- 연차별 -->

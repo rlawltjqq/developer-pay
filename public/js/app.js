@@ -73,6 +73,39 @@ async function loadTech() {
     </div>`).join('');
 }
 
+/* ---------- 스택 ROI ---------- */
+let roiStacksLoaded = false;
+async function loadRoi() {
+  if (roiStacksLoaded) return;
+  const rows = await api('/tech');
+  const opts = rows.map((t) => `<option value="${t.name}">${t.name} (${fmt(t.salary)}만)</option>`).join('');
+  const from = document.getElementById('roi-from');
+  const to = document.getElementById('roi-to');
+  from.innerHTML = opts;
+  to.innerHTML = opts;
+  to.selectedIndex = Math.min(1, rows.length - 1); // 기본값을 서로 다르게
+  roiStacksLoaded = true;
+}
+document.getElementById('roi-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const from = document.getElementById('roi-from').value;
+  const to = document.getElementById('roi-to').value;
+  try {
+    const d = await api(`/stack-roi?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
+    document.getElementById('roi-result').hidden = false;
+    const sign = d.diff_manwon > 0 ? '+' : '';
+    const el = document.getElementById('roi-diff');
+    el.textContent = `${sign}${fmt(d.diff_manwon)}만원`;
+    el.style.color = d.diff_manwon > 0 ? 'var(--accent-2)' : d.diff_manwon < 0 ? 'var(--danger)' : 'var(--text)';
+    document.getElementById('roi-msg').textContent = `${sign}${d.diff_percent}%`;
+    document.getElementById('roi-from-label').textContent = `${d.from.name} (${d.from.field})`;
+    document.getElementById('roi-from-val').textContent = fmt(d.from.salary) + '만원';
+    document.getElementById('roi-to-label').textContent = `${d.to.name} (${d.to.field})`;
+    document.getElementById('roi-to-val').textContent = fmt(d.to.salary) + '만원';
+    document.getElementById('roi-monthly').textContent = `${sign}${d.monthly_diff_manwon}만원`;
+  } catch (err) { alert(err.message); }
+});
+
 /* ---------- 연차별 ---------- */
 let expChart;
 async function loadExp() {
@@ -391,6 +424,7 @@ document.getElementById('gear-list').addEventListener('click', async (e) => {
 const loaders = {
   jobs: loadJobs,
   tech: loadTech,
+  roi: loadRoi,
   exp: loadExp,
   dist: () => loadDist(),
   world: () => loadWorld(),

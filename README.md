@@ -31,6 +31,7 @@ KV 환경변수(`KV_REST_API_URL`/`KV_REST_API_TOKEN`)가 있으면 자동으로
 |---|---|
 | 🏆 직군 랭킹 | 직무별 평균 연봉. 행 클릭 시 **주요 기술 스택**(임베디드 → C/C++/RTOS)과 **많이 쓰는 장비**(오실로스코프·JTAG 디버거 등) 표시 |
 | 💻 기술스택 | 언어·프레임워크별 평균 연봉 (C++, Python, TensorFlow …) |
+| 💡 스택 ROI | 두 기술스택의 평균 연봉 차이 ("Spring Boot → C++ = +1,009만원") |
 | 📈 연차별 | 신입~10년차+ 평균 연봉 곡선 |
 | 📊 연봉 분포 | 직무·기술스택 평균 + 사용자 제출을 합친 히스토그램, 내 연봉 위치 표시 |
 | 🌍 국가 비교 | 국가별 중앙값 + "내 연봉은 어느 나라 수준?" 매칭 |
@@ -48,6 +49,7 @@ KV 환경변수(`KV_REST_API_URL`/`KV_REST_API_TOKEN`)가 있으면 자동으로
 | GET | `/api/v1/meta` | 출처·환율·저장소 모드 |
 | GET | `/api/v1/jobs` | 직무별 연봉 + `tech`·`gear` 배열 |
 | GET | `/api/v1/tech` | 기술스택·언어별 연봉 |
+| GET | `/api/v1/stack-roi?from=&to=` | 두 기술스택 평균 연봉 차이 |
 | GET | `/api/v1/experience` | 연차별 평균 (`approx` 포함) |
 | GET | `/api/v1/distribution?salary=` | 연봉 분포 히스토그램(버킷) + 내 위치 |
 | GET | `/api/v1/countries?salary=5000` | 국가별 중앙값 + 내 위치 매칭 |
