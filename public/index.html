@@ -17,6 +17,7 @@
     <button class="tab active" data-tab="jobs">🏆 직군 랭킹</button>
     <button class="tab" data-tab="tech">💻 기술스택</button>
     <button class="tab" data-tab="exp">📈 연차별</button>
+    <button class="tab" data-tab="dist">📊 연봉 분포</button>
     <button class="tab" data-tab="world">🌍 국가 비교</button>
     <button class="tab" data-tab="me">🎯 내 연봉 위치</button>
     <button class="tab" data-tab="net">💰 실수령액</button>
@@ -46,6 +47,19 @@
     <p class="hint">신입부터 10년차+까지, 내 연차의 평균은 어디쯤일까요?</p>
     <div class="chart-wrap"><canvas id="exp-chart"></canvas></div>
     <div id="exp-list" class="chip-row"></div>
+  </section>
+
+  <!-- 연봉 분포 -->
+  <section id="panel-dist" class="panel">
+    <h2>개발자 연봉 분포</h2>
+    <p class="hint">점핏 2025 직무·기술스택 평균 + 사용자 제출 연봉을 합친 분포 (500만원 단위). 내 연봉을 넣으면 위치를 표시합니다.</p>
+    <div class="me-match">
+      <input id="dist-salary" type="number" placeholder="내 연봉 (만원)" min="1000" max="100000" />
+      <button id="dist-btn" class="btn">내 위치 표시 📍</button>
+    </div>
+    <div id="dist-result" class="callout" hidden></div>
+    <div class="chart-wrap"><canvas id="dist-chart"></canvas></div>
+    <p class="hint" id="dist-meta"></p>
   </section>
 
   <!-- 국가 비교 -->

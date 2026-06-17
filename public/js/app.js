@@ -107,6 +107,42 @@ async function loadExp() {
   });
 }
 
+/* ---------- 연봉 분포 ---------- */
+let distChart;
+async function loadDist(salary) {
+  const q = salary ? `?salary=${salary}` : '';
+  const d = await api('/distribution' + q);
+  const myBucket = d.me ? d.me.bucket : null;
+  const labels = d.buckets.map((b) => `${(b.from / 1000).toFixed(1)}~${((b.to + 1) / 1000).toFixed(1)}천`);
+  const colors = d.buckets.map((b) => (b.from === myBucket ? '#e3b341' : '#58a6ff'));
+  document.getElementById('dist-meta').textContent =
+    `총 ${fmt(d.total)}개 데이터 (기준 평균 ${d.base_count} + 사용자 제출 ${d.submission_count}) · ${d.note}`;
+  if (d.me) {
+    const box = document.getElementById('dist-result');
+    box.hidden = false; box.className = 'callout ok';
+    box.innerHTML = `내 연봉 <b>${fmt(d.me.salary)}만원</b>은 이 분포에서 <b>상위 ${(100 - d.me.percentile).toFixed(1)}%</b> (하위 ${d.me.percentile}%) 위치입니다.`;
+  }
+  const ctx = document.getElementById('dist-chart');
+  distChart?.destroy();
+  distChart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ label: '데이터 수', data: d.buckets.map((b) => b.count), backgroundColor: colors }] },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { title: (i) => labels[i[0].dataIndex] + '만원' } } },
+      scales: {
+        x: { ticks: { color: '#8b949e', maxRotation: 60, minRotation: 45 }, grid: { display: false } },
+        y: { ticks: { color: '#8b949e', precision: 0 }, grid: { color: '#2d333b55' } },
+      },
+    },
+  });
+}
+document.getElementById('dist-btn').addEventListener('click', () => {
+  const v = Number(document.getElementById('dist-salary').value);
+  loadDist(v > 0 ? v : undefined);
+});
+
 /* ---------- 국가 비교 ---------- */
 async function loadWorld(salary) {
   const q = salary ? `?salary=${salary}` : '';
@@ -356,6 +392,7 @@ const loaders = {
   jobs: loadJobs,
   tech: loadTech,
   exp: loadExp,
+  dist: () => loadDist(),
   world: () => loadWorld(),
   submit: loadRecent,
   gear: loadGear,

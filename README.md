@@ -32,6 +32,7 @@ KV 환경변수(`KV_REST_API_URL`/`KV_REST_API_TOKEN`)가 있으면 자동으로
 | 🏆 직군 랭킹 | 직무별 평균 연봉. 행 클릭 시 **주요 기술 스택**(임베디드 → C/C++/RTOS)과 **많이 쓰는 장비**(오실로스코프·JTAG 디버거 등) 표시 |
 | 💻 기술스택 | 언어·프레임워크별 평균 연봉 (C++, Python, TensorFlow …) |
 | 📈 연차별 | 신입~10년차+ 평균 연봉 곡선 |
+| 📊 연봉 분포 | 직무·기술스택 평균 + 사용자 제출을 합친 히스토그램, 내 연봉 위치 표시 |
 | 🌍 국가 비교 | 국가별 중앙값 + "내 연봉은 어느 나라 수준?" 매칭 |
 | 🎯 내 연봉 위치 | 직군·연차 기준 상위 몇 %인지 게이지 + 시급/분급 환산. **결과를 이미지 카드(PNG)로 만들어 저장·공유** (클라이언트 SVG→PNG, 의존성 없음) |
 | 💰 실수령액 | 세전 연봉 → 4대보험·소득세 공제 → 월 실수령액 (2025 요율) |
@@ -48,6 +49,7 @@ KV 환경변수(`KV_REST_API_URL`/`KV_REST_API_TOKEN`)가 있으면 자동으로
 | GET | `/api/v1/jobs` | 직무별 연봉 + `tech`·`gear` 배열 |
 | GET | `/api/v1/tech` | 기술스택·언어별 연봉 |
 | GET | `/api/v1/experience` | 연차별 평균 (`approx` 포함) |
+| GET | `/api/v1/distribution?salary=` | 연봉 분포 히스토그램(버킷) + 내 위치 |
 | GET | `/api/v1/countries?salary=5000` | 국가별 중앙값 + 내 위치 매칭 |
 | POST | `/api/v1/salaries` | 연봉 제출 — `{ "job_id": 11, "years": 3, "salary": 5200 }` |
 | GET | `/api/v1/salaries/recent` | 최근 제출 20건 |
