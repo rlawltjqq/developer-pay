@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "DevPay",
+    "slug": "devpay",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "scheme": "devpay",
+    "splash": {
+      "backgroundColor": "#0d1117"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.devpay.mobile"
+    },
+    "android": {
+      "package": "app.devpay.mobile"
+    },
+    "extra": {
+      "apiBaseUrl": "https://developer-pay.vercel.app/api/v1"
+    }
+  }
+}
